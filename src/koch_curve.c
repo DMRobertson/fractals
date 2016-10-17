@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define PI 3.141592653589
 
@@ -37,16 +38,12 @@ void transform(double* target, size_t tindex, darray* replacement, double* dest,
 		y -= target[tindex+1];
 		x /= scale;
 		y /= scale;
-		printf("%zu %zu\n", destindex+i, destindex+i+1);
 		dest[destindex+i]   = x * cosine - y * sine;
 		dest[destindex+i+1] = x * sine   + y * cosine;
 	}
 }
 
-int main(int argc, char** argv){
-	darray* list = &koch_initial;
-	darray* rule = &koch_rule;
-	
+darray* iteration(darray* list, darray* rule){
 	size_t points = (list->length/2 - 1) * (rule->length/2 + 1) + 1;
 	darray* newlist = malloc(sizeof(darray));
 	newlist->length = points*2;
@@ -61,18 +58,35 @@ int main(int argc, char** argv){
 		newlist->points[j+1] = list->points[i+3];
 		j += 2;
 	}
+	return newlist;
+}
+
+darray* copy_darray(darray* source){
+	darray* output = malloc(sizeof(darray));
+	output->length = source->length;
+	output->points = malloc(sizeof(double) * output->length);
+	memcpy(output->points, source->points, sizeof(double) * output->length);
+	return output;
+}
+
+int main(int argc, char** argv){
+	darray* list = copy_darray(&koch_initial);
+	darray* rule = copy_darray(&koch_rule);
 	
-	for (size_t i=0; i < list->length; i++){
-		printf("%f ", list->points[i]);
+	for (size_t i = 0; i < 2; i++){
+		darray* newlist = iteration(list, rule);
+		free(list->points);
+		free(list);
+		list = newlist;
+		newlist = NULL;
+		
+		for (size_t j=0; j < list->length; j++){
+			printf("%f ", list->points[j]);
+		}
+		printf("\npoints: %zu\n", list->length);
 	}
-	printf("\npoints: %zu\n", list->length);
 	
-	for (size_t i=0; i < newlist->length; i++){
-		printf("%f ", newlist->points[i]);
-	}
-	printf("\npoints: %zu\n", newlist->length);
-	
-	free(newlist->points);
-	free(newlist);
+	free(list->points);
+	free(list);
 	return 0;
 }
