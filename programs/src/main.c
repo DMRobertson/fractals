@@ -15,12 +15,17 @@ static struct argp_option options[] = {
 	//name          key  arg      flags doc                                          group
 	{ "iterations", 'i', "niter", 0, "How many iterations to compute. (Positive integer, default 5)"  , 0 },
 	{ "all"       , 'a', NULL   , 0, "Print each iteration, not just the end result"                  , 0 },
+	{ "svg"       , 's', NULL   , 0, "Output SVG markup instead of pure coordinates"                  , 0 },
+	{ "format"    , 'f', NULL   , 0, "The printf() conversion specification to use when printing "
+	                                 "doubles. (String, default %f)"                                  , 0 },
 	{ 0 }
 };
 
 struct arguments {
 	unsigned iterations;
 	bool all;
+	char* format;
+	bool svg;
 };
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
@@ -35,6 +40,12 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 			break;
 		case 'a':
 			args->all = true;
+			break;
+		case 'f':
+			args->format = arg;
+			break;
+		case 's':
+			args->svg = true;
 			break;
 		default:
 			return ARGP_ERR_UNKNOWN;	
@@ -54,7 +65,9 @@ struct argp parser = {
 int main(int argc, char** argv){
 	struct arguments arguments;
 	arguments.iterations = 5;
-	arguments.all = 0; // false
+	arguments.all = false;
+	arguments.format = "%f";
+	arguments.svg = false;
 	
 	error_t result = argp_parse(&parser, argc, argv, 0, NULL, &arguments);
 	if (result){
@@ -62,12 +75,18 @@ int main(int argc, char** argv){
 		exit(EXIT_FAILURE);
 	}
 	
-	printf("all: %d niter: %d\n", arguments.all, arguments.iterations);
-	
 	darray* list = copy_darray(&koch_initial);
-	darray* rule = copy_darray(&koch_rule);
+	// darray* rule = &koch_rule;
+	darray* rule = &test_rule;
 	
-	for (size_t i = 0; i < 2; i++){
+	if (arguments.svg){
+		printf("<svg version='1.1' width='2' height='1' viewbox='-0.5 -0.5 2 1' xmlns='http://www.w3.org/2000/svg'>\n");
+	}
+	
+	for (size_t i = 0; i < arguments.iterations; i++){
+		if (arguments.all){
+			print_darray(list, arguments.format, arguments.svg);
+		}
 		darray* newlist = iteration(list, rule);
 		free(list->points);
 		free(list);
@@ -75,7 +94,11 @@ int main(int argc, char** argv){
 		newlist = NULL;
 	}
 	
-	print_darray(list);	
+	print_darray(list, arguments.format, arguments.svg);
+	if (arguments.svg){
+		printf("</svg>");
+	}
+	
 	free(list->points);
 	free(list);
 	exit(EXIT_SUCCESS);

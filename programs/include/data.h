@@ -9,4 +9,7 @@ darray koch_initial = {4, _koch_initial};
 //fourth entry is tan(pi/3)/6.0
 double _koch_rule[6] = {1/3.0, 0, 1/2.0, 0.28867513459, 2/3.0, 0};
 darray koch_rule = {6, _koch_rule};
+
+double _test_rule[8] = {1/5.0, 0, 2/5.0, 0.2, 3/5.0, -0.2, 4/5.0, 0};
+darray test_rule = {8, _test_rule};
 #endif

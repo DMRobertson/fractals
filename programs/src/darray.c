@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "darray.h"
 
 darray* copy_darray(const darray const* source){
@@ -10,9 +11,18 @@ darray* copy_darray(const darray const* source){
 	return output;
 }
 
-void print_darray(const darray const* source){
-	for (size_t j=0; j < source->length; j++){
-		printf("%f ", source->points[j]);
+void print_darray(const darray const* source, const char * const format, const bool svg){
+	if (svg){
+		printf("<polyline style='fill:none; stroke: black; stroke-width: 0.02px' points=\"");
+	}
+	for (size_t j=0; j < source->length; j += 2){
+		printf(format, source->points[j]);
+		printf(",");
+		printf(format, source->points[j+1]);
+		printf(" ");
+	}
+	if (svg){
+		printf("\" />");
 	}
 	printf("\n");
 }
