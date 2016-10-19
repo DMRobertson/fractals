@@ -1,0 +1,3 @@
+koch
+*.o
+bin/koch
