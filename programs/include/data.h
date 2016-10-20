@@ -3,13 +3,25 @@
 
 #include "darray.h"
 
-double _koch_initial[4] = {0.0, 0.0, 1.0, 0.0};
-darray koch_initial = {4, _koch_initial};
+// should be kept sorted
+char* named_fractal_names[] = {
+	"koch",
+	"test"
+};
 
-//fourth entry is tan(pi/3)/6.0
-double _koch_rule[6] = {1/3.0, 0, 1/2.0, 0.28867513459, 2/3.0, 0};
-darray koch_rule = {6, _koch_rule};
+//TODO make this automatic innit
+size_t named_fractal_count = 2;
 
-double _test_rule[8] = {1/5.0, 0, 2/5.0, 0.2, 3/5.0, -0.2, 4/5.0, 0};
-darray test_rule = {8, _test_rule};
-#endif
+static darray unit_interval = {4, (double[]) { 0.0, 0.0, 1.0, 0.0} };
+
+darray* named_fractal_data[] = {
+	//initial then replacement
+	//koch. The fourth double in the replacement rule is tan(pi/3)/6
+	&unit_interval,
+	&(darray) {6, (double[]) { 1/3.0, 0, 1/2.0, 0.28867513459, 2/3.0, 0 } },
+	//test. Random example I asked for just to check it worked.
+	&unit_interval,
+	&(darray) {8, (double[]) {1/5.0, 0, 2/5.0, 0.2, 3/5.0, -0.2, 4/5.0, 0} },
+};
+
+#endif // DATA_H_

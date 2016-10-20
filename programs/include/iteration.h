@@ -9,4 +9,4 @@ void transform(const double * const target, const size_t tindex, const darray * 
 
 darray* iteration(const darray * const list, const darray * const rule);
 
-#endif
+#endif //ITERATION_H_

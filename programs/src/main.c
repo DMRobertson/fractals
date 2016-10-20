@@ -11,91 +11,123 @@
 #include "data.h"
 #include "iteration.h"
 
-static struct argp_option options[] = {
-	//name          key  arg      flags doc                                          group
-	{ "iterations", 'i', "niter", 0, "How many iterations to compute. (Positive integer, default 5)"  , 0 },
-	{ "all"       , 'a', NULL   , 0, "Print each iteration, not just the end result"                  , 0 },
-	{ "svg"       , 's', NULL   , 0, "Output SVG markup instead of pure coordinates"                  , 0 },
-	{ "format"    , 'f', NULL   , 0, "The printf() conversion specification to use when printing "
+static struct argp_option options_definition[] = {
+	//name          key  arg      flags doc                                                           group
+	{ "all"       , 'a',  NULL  , 0, "Print each iteration, not just the end result"                  , 0 },
+	{ "format"    , 'f',  NULL  , 0, "The printf() conversion specification to use when printing "
 	                                 "doubles. (String, default %f)"                                  , 0 },
+	{ "iterations", 'i', "NITER", 0, "How many iterations to compute. (Positive integer, default 5)"  , 0 },
+	{ "list-names", 'l',  NULL  , 0, "Print the list of NAMEs accepted by --name and return"          , 0 },
+	{ "name"      , 'n', "NAME" , 0, "Construct a pre-built fractal called NAME."                     , 0 },
+	{ "svg"       , 's',  NULL  , 0, "Output SVG markup instead of pure coordinates"                  , 0 },
 	{ 0 }
 };
 
-struct arguments {
-	unsigned iterations;
+typedef struct options {
 	bool all;
 	char* format;
+	unsigned iterations;
+	bool list_names;
+	char* name;
 	bool svg;
+	// internal-only: the parse_opt function is responsible for forming these out of the arguments.
+	darray* initial;
+	darray* rule;
+} options_t;
+
+options_t options = {
+	false,
+	"%f",
+	5,
+	false,
+	NULL,
+	false,
+	NULL,
+	NULL
 };
 
+extern char* named_fractal_names[];
+extern darray* named_fractal_data[];
+extern size_t named_fractal_count;
+
+int bsearch_strcmp(const void* a, const void* b){
+	return strcmp( (char*) a, (char*) b);
+}
+
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
-	struct arguments * args = state->input;
+	options_t* args = state->input;
 	int failure;
 	switch(key){
-		case 'i':
-			failure = sscanf(arg , "%u", &args->iterations);
-			if (failure != 1){
-				argp_error(state, "number of iterations should be a non-negative integer");
-			}
-			break;
 		case 'a':
 			args->all = true;
 			break;
 		case 'f':
 			args->format = arg;
 			break;
+		case 'i':
+			failure = sscanf(arg , "%u", &args->iterations);
+			if (failure != 1){
+				argp_error(state, "number of iterations should be a non-negative integer");
+			}
+			break;
+		case 'l':
+			args->list_names = true;
+			break;
+		case 'n':
+			args->name = arg;
+			char* needle = bsearch(&arg, named_fractal_names, named_fractal_count, sizeof(char*), bsearch_strcmp);
+			if (needle == NULL){
+				argp_error(state, "Unrecognised name: %s");
+			}
+			
+			break;
 		case 's':
 			args->svg = true;
 			break;
 		default:
-			return ARGP_ERR_UNKNOWN;	
+			return ARGP_ERR_UNKNOWN;
 	}
 	return 0;
 }
 
-// static char args_doc[] = "";
-static char args_doc[] = "";
-static char doc[] = "Compute iterations approximating various (topolgically) 1D fractals";
+static const char args_doc[] = "";
+static const char doc[] = "Compute iterations approximating various (topolgically) 1D fractals";
 
 struct argp parser = {
 	// second entry is the argp_parser_t parser
-	options, parse_opt, args_doc, doc, NULL, NULL, NULL
+	options_definition, parse_opt, args_doc, doc, NULL, NULL, NULL
 };
 
-int main(int argc, char** argv){
-	struct arguments arguments;
-	arguments.iterations = 5;
-	arguments.all = false;
-	arguments.format = "%f";
-	arguments.svg = false;
-	
-	error_t result = argp_parse(&parser, argc, argv, 0, NULL, &arguments);
+int main(int argc, char** argv){	
+	error_t result = argp_parse(&parser, argc, argv, 0, NULL, &options);
 	if (result){
 		fprintf(stderr, "%s argument parser: %s\n", argv[0], strerror(result));
 		exit(EXIT_FAILURE);
+	} else if (options.rule == NULL){
+		//TODO argp_usage
+		fprintf(stderr, "don't know which rule to use fixme\n");
+		exit(EXIT_FAILURE);
 	}
 	
-	darray* list = copy_darray(&koch_initial);
-	// darray* rule = &koch_rule;
-	darray* rule = &test_rule;
+	darray* list = copy_darray(options.initial);
 	
-	if (arguments.svg){
+	if (options.svg){
 		printf("<svg version='1.1' width='2' height='1' viewbox='-0.5 -0.5 2 1' xmlns='http://www.w3.org/2000/svg'>\n");
 	}
 	
-	for (size_t i = 0; i < arguments.iterations; i++){
-		if (arguments.all){
-			print_darray(list, arguments.format, arguments.svg);
+	for (size_t i = 0; i < options.iterations; i++){
+		if (options.all){
+			print_darray(list, options.format, options.svg);
 		}
-		darray* newlist = iteration(list, rule);
+		darray* newlist = iteration(list, options.rule);
 		free(list->points);
 		free(list);
 		list = newlist;
 		newlist = NULL;
 	}
 	
-	print_darray(list, arguments.format, arguments.svg);
-	if (arguments.svg){
+	print_darray(list, options.format, options.svg);
+	if (options.svg){
 		printf("</svg>");
 	}
 	
