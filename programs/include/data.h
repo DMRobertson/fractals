@@ -4,13 +4,13 @@
 #include "darray.h"
 
 // should be kept sorted
-char* named_fractal_names[] = {
+const char* const named_fractal_names[] = {
 	"koch",
 	"test"
 };
 
 //TODO make this automatic innit
-size_t named_fractal_count = 2;
+const size_t named_fractal_count = 2;
 
 static darray unit_interval = {4, (double[]) { 0.0, 0.0, 1.0, 0.0} };
 

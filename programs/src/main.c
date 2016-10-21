@@ -36,27 +36,29 @@ typedef struct options {
 } options_t;
 
 options_t options = {
-	false,
-	"%f",
-	5,
-	false,
-	NULL,
-	false,
-	NULL,
-	NULL
+	false, //all
+	"%f",  //format
+	5,     //iterations
+	false, //list-names
+	NULL,  //names
+	false, //svg
+	//internal only
+	NULL,  //initial
+	NULL   //rule
 };
 
-extern char* named_fractal_names[];
+extern const char * const named_fractal_names[];
 extern darray* named_fractal_data[];
-extern size_t named_fractal_count;
+extern const size_t named_fractal_count;
 
 int bsearch_strcmp(const void* a, const void* b){
 	return strcmp( (char*) a, (char*) b);
 }
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
-	options_t* args = state->input;
 	int failure;
+	
+	options_t* args = state->input;
 	switch(key){
 		case 'a':
 			args->all = true;
@@ -74,12 +76,17 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 			args->list_names = true;
 			break;
 		case 'n':
-			args->name = arg;
-			char* needle = bsearch(&arg, named_fractal_names, named_fractal_count, sizeof(char*), bsearch_strcmp);
-			if (needle == NULL){
-				argp_error(state, "Unrecognised name: %s");
+			for (size_t index = 0; index < named_fractal_count; index++){
+				if (strcmp(named_fractal_names[index], arg) == 0){
+					args->name = arg;
+					args->initial = named_fractal_data[2*index];
+					args->rule = named_fractal_data[2*index + 1];
+					break;
+				}
 			}
-			
+			if (args->name == NULL){
+				argp_error(state, "Unknown fractal %s. Use --list-names to print the names of known fractals", arg);
+			}
 			break;
 		case 's':
 			args->svg = true;
@@ -100,12 +107,9 @@ struct argp parser = {
 
 int main(int argc, char** argv){	
 	error_t result = argp_parse(&parser, argc, argv, 0, NULL, &options);
+	//TODO: use argp_error
 	if (result){
 		fprintf(stderr, "%s argument parser: %s\n", argv[0], strerror(result));
-		exit(EXIT_FAILURE);
-	} else if (options.rule == NULL){
-		//TODO argp_usage
-		fprintf(stderr, "don't know which rule to use fixme\n");
 		exit(EXIT_FAILURE);
 	}
 	
