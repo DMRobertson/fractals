@@ -114,6 +114,7 @@ int main(int argc, char** argv){
 	}
 	
 	darray* list = copy_darray(options.initial);
+	double initial_length = euclidean_length(list->points[0], list->points[1], list->points[2], list->points[3]);
 	
 	if (options.svg){
 		printf("<svg version='1.1' width='2' height='1' viewbox='-0.5 -0.5 2 1' xmlns='http://www.w3.org/2000/svg'>\n");
@@ -123,7 +124,7 @@ int main(int argc, char** argv){
 		if (options.all){
 			print_darray(list, options.format, options.svg);
 		}
-		darray* newlist = iteration(list, options.rule);
+		darray* newlist = iteration(list, initial_length, options.rule);
 		free(list->points);
 		free(list);
 		list = newlist;
