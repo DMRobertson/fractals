@@ -14,8 +14,11 @@ CFLAGS = -std=c99 -g -Wall -Wextra -I $(HEADER_DIR)
 CLIBS  = -lm
 
 .PHONY: binary 
-binary: $(OBJECTS)
+binary: $(OBJECTS) copy_data
 	$(CC) $(CFLAGS) $(OBJECTS) $(CLIBS) -o $(OUTPUT_DIR)/$(PROGRAM_NAME)
+
+copy_data:
+	cp data/*.dat $(OUTPUT_DIR)
 
 # -c: compile only
 # -o: output to
