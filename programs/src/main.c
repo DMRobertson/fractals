@@ -119,29 +119,53 @@ int main(int argc, char** argv){
 		exit(EXIT_FAILURE);
 	}
 	
-	darray* list = options.initial;
-	double initial_length = euclidean_length(list->points[0], list->points[1], list->points[2], list->points[3]);
-	
-	if (options.svg){
-		printf("<svg version='1.1' width='2' height='1' viewbox='-0.5 -0.5 2 1' xmlns='http://www.w3.org/2000/svg'>\n");
-	}
+	darray** iterations = malloc(sizeof(darray*) * (options.niter + 1));
+	iterations[0] = options.initial;
+	double initial_length = euclidean_length(
+		iterations[0]->points[0], iterations[0]->points[1],
+		iterations[0]->points[2], iterations[0]->points[3]
+	);
 	
 	for (size_t i = 0; i < options.niter; i++){
-		if (options.all){
-			print_darray(list, options.format, options.svg);
+		iterations[i+1] = iteration(iterations[i], initial_length, options.rule);
+	}
+	darray* last = iterations[options.niter];
+	
+	if (options.svg){
+		double xmin = +INFINITY;
+		double xmax = -INFINITY;
+		double ymin = +INFINITY;
+		double ymax = -INFINITY;
+		
+		for (size_t j = 0; j < last->length; j += 2){
+			xmin = fmin(xmin, last->points[j]);
+			xmax = fmax(xmax, last->points[j]);
+			ymin = fmin(ymin, last->points[j+1]);
+			ymax = fmax(ymax, last->points[j+1]);
 		}
-		darray* newlist = iteration(list, initial_length, options.rule);
-		free_darray(list);
-		list = newlist;
-		newlist = NULL;
+		double width  = xmax - xmin;
+		double height = ymax - ymin;
+		printf("<svg version='1.1' width='%f' height='%f' viewbox='0 0 %f %f' xmlns='http://www.w3.org/2000/svg'>\n",
+			width, height, width, height);
+		printf("\t<g transform='translate(%f,%f)'>\n", -xmin, -ymin);
 	}
 	
-	print_darray(list, options.format, options.svg);
+	if (options.all){
+		for (size_t i = 0; i < options.niter; i++){
+			printf("\t\t");
+			print_darray(iterations[i], options.format, options.svg);
+		}
+	}
+	print_darray(iterations[options.niter], options.format, options.svg);
 	if (options.svg){
+		printf("\t</g>\n");
 		printf("</svg>");
 	}
 	
-	free_darray(list);
+	for (size_t i = 0; i <= options.niter; i++){
+		free_darray(iterations[i]);
+	}
+	free(iterations);
 	free_darray(options.rule);
 	exit(EXIT_SUCCESS);
 }

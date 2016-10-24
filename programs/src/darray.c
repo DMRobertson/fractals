@@ -32,7 +32,6 @@ darray* load_darray(FILE* file, char* fmt){
 	size_t length;
 	fscanf(file, "%zu", &length);
 	// TODO: check length is even and probably > 0;
-	printf("length: %zu\n", length);
 	darray* output = new_darray(length); 
 	for (size_t i = 0; i < length; i += 2){
 		fscanf(file, fmt, output->points + i);
