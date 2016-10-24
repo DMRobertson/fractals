@@ -18,7 +18,7 @@ binary: $(OBJECTS) copy_data
 	$(CC) $(CFLAGS) $(OBJECTS) $(CLIBS) -o $(OUTPUT_DIR)/$(PROGRAM_NAME)
 
 copy_data:
-	cp data/*.dat $(OUTPUT_DIR)
+	cp data/*.init data/*.rule $(OUTPUT_DIR)
 
 # -c: compile only
 # -o: output to

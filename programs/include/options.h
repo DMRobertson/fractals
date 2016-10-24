@@ -5,17 +5,16 @@
 
 typedef struct options {
 	bool all;
-	unsigned iterations;
-	bool list_names;
-	char* name;
-	char* names_include;
 	char* format;
+	char* include;
+	bool list;
+	unsigned niter;
 	bool svg;
 	// internal-only: the parse_opt function is responsible for forming these out of the arguments.
 	darray* initial;
 	darray* rule;
 } options_t;
 
-int load_named_fractal(char* filename, options_t* args);
+darray* load_named_data(char* filename, char* ext, options_t* args);
 
 #endif //OPTIONS_H

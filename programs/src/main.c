@@ -17,35 +17,41 @@
 #include "options.h"
 
 static struct argp_option options_definition[] = {
-	//name          key  arg      flags doc                                                           group
-	{ "all"           , 'a',  NULL  , 0, "Print each iteration, not just the end result"                  , 0 },
-	{ "iterations"    , 'i', "NITER", 0, "How many iterations to compute. (Nonegative integer, default 5)", 0 },
-	{ "include"       , 'I', "INC"  , 0, "Look for NAME.dat files in this directory  (default '.')."           
-	                                     "If used, it must occur before any --name=NAME option."          , 0 },
-	{ "list-names"    , 'l',  NULL  , 0, "Print the list of NAMEs accepted by --name and return"          , 0 },
-	{ "name"          , 'n', "NAME" , 0, "Construct a pre-built fractal called NAME"                      , 0 },
-	{ "printf"        , 'p',  "FMT" , 0, "The printf() conversion specification to use when printing"           
-	                                     "doubles. (String, default '%lf')"                                , 0 },
-	{ "svg"           , 's',  NULL  , 0, "Output SVG markup instead of raw coordinates"                   , 0 },
+	//name              key   arg           flags doc                                                           group
+	{ "all"           , 'a',  NULL    , 0, "Print each iteration, not just the end result"                  , 0 },
+	{ "format"        , 'f', "FORMAT" , 0, "The printf() conversion specification to use when printing"           
+	                                       "or reading doubles (String, default '%lf')"                     , 0 },
+	{ "include"       , 'I', "INCLUDE", 0, "Look for NAME.dat files in this directory  (default '.'). "           
+	                                       "If used, it must occur before any --name=NAME option."          , 0 },
+	{ "list"          , 'l',  NULL    , 0, "Print the names accepted by the INITIAL and RULE arguments and "      
+	                                       "return. Looks in the directory specified by --include"          , 0 },
+	{ "niter"         , 'n', "NITER"  , 0, "How many iterations to compute. (Nonegative integer, default 5)", 0 },
+	{ "svg"           , 's',  NULL    , 0, "Output SVG markup instead of raw coordinates"                   , 0 },
 	{ 0 }
 };
 
 extern options_t options;
-
-extern const char * const named_fractal_names[];
-extern darray* named_fractal_data[];
-extern const size_t named_fractal_count;
+extern darray* load_named_data(char* filename, char* ext, options_t* args);
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
 	int result;
-	char* filename;
+	int remaining_args;
 	
 	options_t* args = state->input;
 	switch(key){
 		case 'a':
 			args->all = true;
 			break;
-		case 'i':
+		case 'f':
+			args->format = arg;
+			break;
+		case 'I':
+			args->include = arg;
+			break;
+		case 'l':
+			args->list = true;
+			break;
+		case 'n':
 			// result is the number of things scanned
 			while ( isspace(*arg) ){
 				arg++;
@@ -53,49 +59,49 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 			if (*arg == '-'){
 				result = -1;
 			} else {
-				result = sscanf(arg , "%u", &args->iterations);
+				result = sscanf(arg , "%u", &args->niter);
 			}
 			if (result != 1){
 				argp_failure(state, EINVAL, 0, "number of iterations should be a non-negative integer (received '%s')", arg);
 			}
 			break;
-		case 'I':
-			args->names_include = arg;
-			break;
-		case 'l':
-			args->list_names = true;
-			//TODO: print out list of names
-			exit(EXIT_SUCCESS);
-			break;
-		case 'n':
-		 	//"/",  ".dat" and '\0' contribute 1, 4 and 1 char respectively, for a total of 6
-			filename = malloc(sizeof(char) * (strlen(arg) + strlen(args->names_include) + 6) ); 
-			sprintf(filename, "%s/%s.dat", args->names_include, arg);
-			result = access(filename, F_OK | R_OK);
-			if (result != 0){
-				argp_failure(state, EXIT_FAILURE, errno, "named fractal data %s", filename);
-			}
-			//TODO: load initial and rule here
-			result = load_named_fractal(filename, &options);
-			if (result != 0){
-				argp_failure(state, EXIT_FAILURE, errno, "Data file error %s", filename);
-			}
-			free(filename);
-			break;
-		case 'p':
-			args->format = arg;
-			break;
 		case 's':
 			args->svg = true;
 			break;
+		case ARGP_KEY_NO_ARGS:
+			argp_usage(state);
+			break;
+		case ARGP_KEY_ARG:
+			// We'll get here when reaching the 0th positional argument.
+			// Check we have enough positional arguments.
+			remaining_args = state->argc - state->next;
+			if (remaining_args != 1){
+				argp_usage(state);
+			}
+			args->initial = load_named_data(arg, "init", args);
+			args->rule = load_named_data(state->argv[state->next], "rule", args);
+			// Force argp to stop by informing it that it has consumed all args.
+			state->next = state->argc;
+ 			break;
 		default:
 			return ARGP_ERR_UNKNOWN;
 	}
 	return 0;
 }
 
-static const char args_doc[] = "";
-static const char doc[] = "Compute iterations approximating various (topolgically) 1D fractals";
+static const char args_doc[] = "INITIAL RULE";
+static const char doc[] =
+	"Compute iterations approximating various (topolgically) 1D fractals"
+	"\v"
+	"INITIAL and RULE are paths pointing at a file, which contains the textual description of a darray. "
+	"This consists of an even unsigned integer, followed by pairs of the form '<float>,<float>'. "
+	"The total number of floats must be the given integer."
+	"\nAlternatively, one or both of these arguments can be given as '-', in which case we read the text description from stdin."
+	"\v"
+	"INITIAL looks for data in files INITIAL, INITIAL.init, and (if --include is present) INCLUDE/INITIAL and INCLUDE/INITIAL.init."
+	"If INITIAL already ends in '.init' then the second and fourth possibilities are skipped."
+	"RULE does the same using the .rule extension instead of .init."
+;
 
 struct argp parser = {
 	options_definition, parse_opt, args_doc, doc, NULL, NULL, NULL
@@ -120,7 +126,7 @@ int main(int argc, char** argv){
 		printf("<svg version='1.1' width='2' height='1' viewbox='-0.5 -0.5 2 1' xmlns='http://www.w3.org/2000/svg'>\n");
 	}
 	
-	for (size_t i = 0; i < options.iterations; i++){
+	for (size_t i = 0; i < options.niter; i++){
 		if (options.all){
 			print_darray(list, options.format, options.svg);
 		}

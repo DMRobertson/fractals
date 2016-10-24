@@ -10,8 +10,9 @@ typedef struct darray {
 	double* points;
 } darray;
 
-darray* copy_darray(darray const * const source);
 darray* new_darray(size_t length);
+darray* copy_darray(darray const * const source);
+darray* open_and_load_darray(char* filename, char* fmt);
 darray* load_darray(FILE* file, char* fmt);
 void free_darray(darray* source);
 void print_darray(darray const * const source, const char * const format, const bool svg);
