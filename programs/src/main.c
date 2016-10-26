@@ -35,7 +35,7 @@ extern darray* load_named_data(char* filename, char* ext, options_t* args);
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state){
 	int result;
-	int remaining_args;
+	int num_args;
 	
 	options_t* args = state->input;
 	switch(key){
@@ -74,12 +74,21 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 		case ARGP_KEY_ARG:
 			// We'll get here when reaching the 0th positional argument.
 			// Check we have enough positional arguments.
-			remaining_args = state->argc - state->next;
-			if (remaining_args != 1){
+			num_args = 1 + state->argc - state->next;
+			if (num_args < 2 || num_args > 3){
 				argp_usage(state);
 			}
-			args->initial = load_named_data(arg, "init", args);
-			args->rule = load_named_data(state->argv[state->next], "rule", args);
+			char** arg_ptr = state->argv + state->next - 1;
+			args->initial = load_named_data(arg_ptr[0], "init", args);
+			args->rule = load_named_data(arg_ptr[1], "rule", args);
+			if (num_args == 3){
+				args->flip = arg_ptr[2];
+				for (char* ptr = args->flip; *ptr != '\0'; ptr++){
+					//convert to ASCII uppercase
+					*ptr &= 0b11011111;
+				}
+				fprintf(stderr, "%s\n", args->flip);
+			}
 			// Force argp to stop by informing it that it has consumed all args.
 			state->next = state->argc;
  			break;
@@ -89,18 +98,23 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 	return 0;
 }
 
-static const char args_doc[] = "INITIAL RULE";
+static const char args_doc[] = "INITIAL RULE [FLIP]";
 static const char doc[] =
 	"Compute iterations approximating various (topolgically) 1D fractals"
 	"\v"
 	"INITIAL and RULE are paths pointing at a file, which contains the textual description of a darray. "
 	"This consists of an even unsigned integer, followed by pairs of the form '<float>,<float>'. "
 	"The total number of floats must be the given integer."
-	"\nAlternatively, one or both of these arguments can be given as '-', in which case we read the text description from stdin."
+	"Alternatively, one or both of these arguments can be given as '-', in which case we read the text description from stdin."
 	"\v"
-	"INITIAL looks for data in files INITIAL, INITIAL.init, and (if --include is present) INCLUDE/INITIAL and INCLUDE/INITIAL.init."
+	"INITIAL looks for data in files INITIAL, INITIAL.init, and (if --include is present) INCLUDE/INITIAL and INCLUDE/INITIAL.init. "
 	"If INITIAL already ends in '.init' then the second and fourth possibilities are skipped."
 	"RULE does the same using the .rule extension instead of .init."
+	"\v"
+	"The RULE is a series of points p1, ..., pn and represents a deformation of the line segment (0, 0) to (1, 0). "
+	"Every line segment in INITIAL is replaced by a scaled, rotated and possibly reflected copy of the RULE."
+	"Reflection is controlled by the FLIP argument."
+	//TODO describe FLIP
 ;
 
 struct argp parser = {
@@ -126,8 +140,16 @@ int main(int argc, char** argv){
 		iterations[0]->points[2], iterations[0]->points[3]
 	);
 	
-	for (size_t i = 0; i < options.niter; i++){
-		iterations[i+1] = iteration(iterations[i], initial_length, options.rule);
+	if (options.niter > 0){
+		size_t i = 0;
+		//Don't apply any flips on the first application if we're beginning with a line segment
+		if (options.initial->length == 4){
+			iterations[i+1] = iteration(iterations[i], initial_length, options.rule, "N");
+			i++;
+		}
+		for (; i < options.niter; i++){
+			iterations[i+1] = iteration(iterations[i], initial_length, options.rule, options.flip);
+		}
 	}
 	darray* last = iterations[options.niter];
 	

@@ -13,7 +13,8 @@ options_t options = {
 	false, //svg
 	//internal only
 	NULL,  //initial. freed in the main loop.
-	NULL   //rule     freed at the end of the main loop.
+	NULL,  //rule     freed at the end of the main loop.
+	"N"    //flip
 };
 
 bool has_extension(char* filename, char* ext){

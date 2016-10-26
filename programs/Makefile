@@ -7,7 +7,7 @@ SOURCES = $(wildcard $(SOURCE_DIR)/*.c)
 OBJECTS = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(SOURCES))
 HEADERS = $(wildcard $(HEADER_DIR)/*.h)
 
-PROGRAM_NAME = fractal
+PROGRAM_NAME = teragon
 
 CC = gcc
 CFLAGS = -std=c99 -g -Wall -Wextra -I $(HEADER_DIR)

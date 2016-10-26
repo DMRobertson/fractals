@@ -13,6 +13,7 @@ typedef struct options {
 	// internal-only: the parse_opt function is responsible for forming these out of the arguments.
 	darray* initial;
 	darray* rule;
+	char* flip;
 } options_t;
 
 darray* load_named_data(char* filename, char* ext, options_t* args);

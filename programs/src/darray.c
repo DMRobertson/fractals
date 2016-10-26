@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "darray.h"
 
+#define EPSILON 1e-10
+
 darray* new_darray(size_t length){
 	darray* output = malloc(sizeof(darray));
 	output->length = length;
@@ -47,10 +49,20 @@ void free_darray(darray* source){
 }
 
 void print_darray(const darray const* source, const char * const format, const bool svg){
+	size_t end;
 	if (svg){
-		printf("<polyline style='fill:none; stroke: black; stroke-width: 0.02px' points=\"");
+		double dx = source->points[0] - source->points[source->length-2];
+		double dy = source->points[1] - source->points[source->length-1];
+		if ((abs(dx) < EPSILON) && (abs(dy) < EPSILON)){
+			printf("<polygon");
+			end = source->length - 2;
+		} else {
+			printf("<polyline");
+			end = source->length;
+		}
+		printf(" style='fill:none; stroke: black; stroke-width: 0.02px' points=\"");
 	}
-	for (size_t j=0; j < source->length; j += 2){
+	for (size_t j=0; j < end; j += 2){
 		printf(format, source->points[j]);
 		printf(",");
 		printf(format, source->points[j+1]);
