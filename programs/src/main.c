@@ -19,13 +19,16 @@
 static struct argp_option options_definition[] = {
 	//name              key   arg           flags doc                                                           group
 	{ "all"           , 'a',  NULL    , 0, "Print each iteration, not just the end result"                  , 0 },
-	{ "format"        , 'f', "FORMAT" , 0, "The printf() conversion specification to use when printing"           
+	{ "draw"          , 'd',  NULL    , 0, "Draw the boundary of the path."                                 , 0 },
+	{ "fill"          , 'f',  NULL    , 0, "Fill the area bounded by the path."                             , 0 },
+	{ "format"        , 'F', "FORMAT" , 0, "The printf() conversion specification to use when printing"           
 	                                       "or reading doubles (String, default '%lf')"                     , 0 },
 	{ "include"       , 'I', "INCLUDE", 0, "Look for NAME.dat files in this directory  (default '.'). "           
 	                                       "If used, it must occur before any --name=NAME option."          , 0 },
 	{ "list"          , 'l',  NULL    , 0, "Print the names accepted by the INITIAL and RULE arguments and "      
 	                                       "return. Looks in the directory specified by --include"          , 0 },
 	{ "niter"         , 'n', "NITER"  , 0, "How many iterations to compute. (Nonegative integer, default 5)", 0 },
+	//TODO let svg = draw || fill
 	{ "svg"           , 's',  NULL    , 0, "Output SVG markup instead of raw coordinates"                   , 0 },
 	{ 0 }
 };
@@ -42,7 +45,13 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 		case 'a':
 			args->all = true;
 			break;
+		case 'd':
+			args->draw = true;
+			break;
 		case 'f':
+			args->fill = true;
+			break;
+		case 'F':
 			args->format = arg;
 			break;
 		case 'I':
@@ -121,7 +130,7 @@ struct argp parser = {
 	options_definition, parse_opt, args_doc, doc, NULL, NULL, NULL
 };
 
-int main(int argc, char** argv){	
+int main(int argc, char** argv){
 	error_t result = argp_parse(&parser, argc, argv, 0, NULL, &options);
 	if (result){
 		fprintf(stderr, "%s: Problem parsing arguments: %s\n", argv[0], strerror(result));
@@ -135,20 +144,16 @@ int main(int argc, char** argv){
 	
 	darray** iterations = malloc(sizeof(darray*) * (options.niter + 1));
 	iterations[0] = options.initial;
-	double initial_length = euclidean_length(
-		iterations[0]->points[0], iterations[0]->points[1],
-		iterations[0]->points[2], iterations[0]->points[3]
-	);
 	
 	if (options.niter > 0){
 		size_t i = 0;
 		//Don't apply any flips on the first application if we're beginning with a line segment
 		if (options.initial->length == 4){
-			iterations[i+1] = iteration(iterations[i], initial_length, options.rule, "N");
+			iterations[i+1] = iteration(iterations[i], options.rule, "N");
 			i++;
 		}
 		for (; i < options.niter; i++){
-			iterations[i+1] = iteration(iterations[i], initial_length, options.rule, options.flip);
+			iterations[i+1] = iteration(iterations[i], options.rule, options.flip);
 		}
 	}
 	darray* last = iterations[options.niter];
@@ -175,10 +180,10 @@ int main(int argc, char** argv){
 	if (options.all){
 		for (size_t i = 0; i < options.niter; i++){
 			printf("\t\t");
-			print_darray(iterations[i], options.format, options.svg);
+			print_darray(iterations[i], &options);
 		}
 	}
-	print_darray(iterations[options.niter], options.format, options.svg);
+	print_darray(iterations[options.niter], &options);
 	if (options.svg){
 		printf("\t</g>\n");
 		printf("</svg>");

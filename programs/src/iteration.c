@@ -10,7 +10,7 @@ double euclidean_length(const double x1, const double y1, const double x2, const
 }
 
 void transform(
-	const double* const target, const size_t tindex, const double initial_length,
+	const double* const target, const size_t tindex,
 	const darray* const replacement, double* const dest, const size_t destindex, const char flip
 ){
 	double hypotenuse = euclidean_length(target[tindex], target[tindex+1], target[tindex+2], target[tindex+3]);
@@ -48,8 +48,8 @@ void transform(
 			writeindex = destindex + k;
 		}
 		
-		x *= hypotenuse / initial_length;
-		y *= hypotenuse / initial_length;
+		x *= hypotenuse;
+		y *= hypotenuse;
 		
 		dest[writeindex]     = x * cosine - y * sine;
 		dest[writeindex + 1] = x * sine   + y * cosine;
@@ -59,7 +59,7 @@ void transform(
 	}
 }
 
-darray* iteration(const darray * const list, const double initial_length, const darray * const rule, const char* const flip_pattern){
+darray* iteration(const darray * const list, const darray * const rule, const char* const flip_pattern){
 	size_t points = (list->length/2 - 1) * (rule->length/2 + 1) + 1;
 	darray* newlist = malloc(sizeof(darray));
 	newlist->length = points*2;
@@ -70,7 +70,7 @@ darray* iteration(const darray * const list, const double initial_length, const 
 	size_t modulus = strlen(flip_pattern);
 	size_t k = 0;
 	for (size_t i=0, j=2; i < list->length - 2; i += 2){
-		transform(list->points, i, initial_length, rule, newlist->points, j, flip_pattern[k]);		
+		transform(list->points, i, rule, newlist->points, j, flip_pattern[k]);
 		j += rule->length;
 		newlist->points[j+0] = list->points[i+2];
 		newlist->points[j+1] = list->points[i+3];

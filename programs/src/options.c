@@ -6,8 +6,10 @@
 
 options_t options = {
 	false, //all
+	false, //draw
+	false, //fill
 	"%lf", //format
-	"",   //include
+	"",    //include
 	false, //list
 	5,     //niter
 	false, //svg
@@ -55,4 +57,39 @@ darray* load_named_data(char* filename, char* ext, options_t* args){
 	return result;
 }
 
-
+void print_darray(const darray const* source, const options_t* options){
+	size_t end;
+	if (options->svg){
+		double dx = source->points[0] - source->points[source->length-2];
+		double dy = source->points[1] - source->points[source->length-1];
+		if ((abs(dx) < EPSILON) && (abs(dy) < EPSILON)){
+			printf("<polygon");
+			end = source->length - 2;
+		} else {
+			printf("<polyline");
+			end = source->length;
+		}
+		printf(" style='");
+		if (options->fill){
+			printf("fill: black; ");
+		} else {
+			printf("fill: none; ");
+		}
+		if (options->draw){
+			printf("stroke: black; stroke-width: 0.005px; ");
+		} else {
+			printf("stroke: none;");
+		}
+		printf("' points=\"");
+	}
+	for (size_t j=0; j < end; j += 2){
+		printf(options->format, source->points[j]);
+		printf(",");
+		printf(options->format, source->points[j+1]);
+		printf(" ");
+	}
+	if (options->svg){
+		printf("\" />");
+	}
+	printf("\n");
+}
