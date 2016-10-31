@@ -2,24 +2,33 @@ var cy = cytoscape({
 	container: document.getElementById('graph'),
 	elements: [
 		{
-			data: { id: 'start' }
+			data: { id: 'start' }, 
+			selected: false
 		},
 		{
-			data: { id: 'mid' }
+			data: { id: 'mid' }, 
+			selected: false
 		},
 		{
-			data: { id: 'end' }
+			data: { id: 'end' }, 
+			selected: false
 		},
-		{ data: {
-			id: 'e0',
-			source: 'start',
-			target: 'mid'
-		}},
-		{ data: {
-			id: 'e1',
-			source: 'mid',
-			target: 'end'
-		}}
+		{
+			data: {
+				id: 'e0',
+				source: 'start',
+				target: 'mid'
+			},
+			selected: false
+		},
+		{
+			data: {
+				id: 'e1',
+				source: 'mid',
+				target: 'end'
+			},
+			selected: false
+		}
 	],
 	style: [
 		{
@@ -53,7 +62,7 @@ var cy = cytoscape({
 
 cy.on('taphold', 'node', function (event) {
 	var id = this.id();
-	if (id === "start" || id === "end"){
+	if (id === 'start' || id === 'end') {
 		return;
 	}
 	var target = this.outgoers('node')[0].id();
@@ -102,7 +111,7 @@ function getData () {
 	return coords;
 }
 
-cy.on('free position', 'node', function (event) {
+var computeRequest = function (event) {
 	var coords = getData();
 	var request = new XMLHttpRequest();
 	request.open('POST', 'compute', true);
@@ -113,8 +122,13 @@ cy.on('free position', 'node', function (event) {
 			plot(coords);
 		}
 	};
-	request.send(JSON.stringify(coords));
-});
+	request.send(JSON.stringify({
+		'coords': coords,
+		'niter': options.iterations
+	}));
+};
+
+cy.on('free', 'node', computeRequest);
 
 function resize_plot () {
 	var canvas = document.getElementById('plot');
@@ -136,17 +150,24 @@ function plot (coords) {
 
 window.addEventListener('resize', resize_plot);
 window.addEventListener('DOMContentLoaded', resize_plot);
-// window.addEventListener('DOMContentLoaded', make_controls);
+window.addEventListener('DOMContentLoaded', make_controls);
 
-//TODO: make dat.GUI?
-// function make_controls () {
-// 	var Options = function () {
-// 		this.iterations = 5;
-// 		this.live = false;
-// 	};
-// 	
-// 	var options = new Options();
-// 	var gui = new dat.GUI();
-// 	gui.add(options, 'iterations', 2, 10).step(1);
-// 	gui.add(options, 'live');
-// }
+var Options = function () {
+	this.iterations = 5;
+	this.live = false;
+};
+var options = new Options();
+
+function make_controls () {
+	var gui = new dat.GUI();
+	gui.add(options, 'iterations', 2, 10).step(1).onFinishChange(function () {
+		cy.$('#start').trigger('free');
+	});
+	gui.add(options, 'live').onFinishChange(function () {
+		if (options.live) {
+			cy.on('position', 'node', computeRequest);
+		} else {
+			cy.off('position', 'node', computeRequest);
+		}
+	});
+}

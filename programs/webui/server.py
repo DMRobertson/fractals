@@ -21,10 +21,11 @@ def static_files(path):
 	
 @app.route('/compute', methods=['POST'])
 def compute():
-	str = request.get_data().decode(encoding='ascii')
-	coords = json.loads(str)
+	string = request.get_data().decode(encoding='ascii')
+	data = json.loads(string)
+	coords = data['coords']
 	darrays = "\n".join(as_darrays(coords))
-	output = subprocess.check_output([binary, '-', '-'], timeout=10, input=darrays, universal_newlines=True)
+	output = subprocess.check_output([binary, '-n', str(data['niter']), '-', '-'], timeout=10, input=darrays, universal_newlines=True)
 	return output.replace(" ", ",")[:-2]
 
 def as_darrays(coords):
