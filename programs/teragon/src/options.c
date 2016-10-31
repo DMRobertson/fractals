@@ -2,11 +2,12 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <string.h>
+#include <math.h>
 #include "options.h"
 
 options_t options = {
 	false, //all
-	false, //draw
+	NAN,   //draw
 	false, //fill
 	"%lf", //format
 	"",    //include
@@ -75,8 +76,8 @@ void print_darray(const darray const* source, const options_t* options){
 		} else {
 			printf("fill: none; ");
 		}
-		if (options->draw){
-			printf("stroke: black; stroke-width: 0.005px; ");
+		if (!isnan(options->draw)){
+			printf("stroke: black; stroke-width: %lfpx; ", options->draw);
 		} else {
 			printf("stroke: none;");
 		}

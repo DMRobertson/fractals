@@ -7,7 +7,7 @@
 
 typedef struct options {
 	bool all;
-	bool draw;
+	double draw;
 	bool fill;
 	char* format;
 	char* include;

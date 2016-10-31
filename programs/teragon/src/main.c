@@ -17,19 +17,18 @@
 #include "options.h"
 
 static struct argp_option options_definition[] = {
-	//name              key   arg           flags doc                                                           group
-	{ "all"           , 'a',  NULL    , 0, "Print each iteration, not just the end result"                  , 0 },
-	{ "draw"          , 'd',  NULL    , 0, "Draw the boundary of the path."                                 , 0 },
-	{ "fill"          , 'f',  NULL    , 0, "Fill the area bounded by the path."                             , 0 },
-	{ "format"        , 'F', "FORMAT" , 0, "The printf() conversion specification to use when printing"           
-	                                       "or reading doubles (String, default '%lf')"                     , 0 },
-	{ "include"       , 'I', "INCLUDE", 0, "Look for NAME.dat files in this directory  (default '.'). "           
-	                                       "If used, it must occur before any --name=NAME option."          , 0 },
-	{ "list"          , 'l',  NULL    , 0, "Print the names accepted by the INITIAL and RULE arguments and "      
-	                                       "return. Looks in the directory specified by --include"          , 0 },
-	{ "niter"         , 'n', "NITER"  , 0, "How many iterations to compute. (Nonegative integer, default 5)", 0 },
-	//TODO let svg = draw || fill
-	{ "svg"           , 's',  NULL    , 0, "Output SVG markup instead of raw coordinates"                   , 0 },
+	//name              key   arg       flags                doc                                                              group
+	{ "all"           , 'a',  NULL    , 0,                   "Print each iteration, not just the end result"                  , 0 },
+	{ "draw"          , 'd', "WIDTH"  , OPTION_ARG_OPTIONAL, "Output SVG and draw the path as a line of length WIDTH pixels "       
+	                                                         "(double, default 1)"                                            , 0 },
+	{ "fill"          , 'f',  NULL    , 0,                   "Output SVG and fill the area bounded by the path."              , 0 },
+	{ "format"        , 'F', "FORMAT" , 0,                   "The printf() conversion specification to use when printing"           
+	                                                         "or reading doubles (default '%lf')"                             , 0 },
+	{ "include"       , 'I', "INCLUDE", 0,                   "Look for NAME.dat files in this directory  (default '.'). "           
+	                                                         "If used, it must occur before any --name=NAME option."          , 0 },
+	{ "list"          , 'l',  NULL    , 0,                   "Print the names accepted by the INITIAL and RULE arguments and "      
+	                                                         "return. Looks in the directory specified by --include"          , 0 },
+	{ "niter"         , 'n', "NITER"  , 0,                   "How many iterations to compute (nonegative integer, default 5)" , 0 },
 	{ 0 }
 };
 
@@ -46,10 +45,16 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 			args->all = true;
 			break;
 		case 'd':
-			args->draw = true;
+			args->svg = true;
+			if (arg == NULL){
+				args->draw = 1.0;
+			} else {
+				sscanf(arg, "%lf", &args->draw);
+			}
 			break;
 		case 'f':
 			args->fill = true;
+			args->svg = true;
 			break;
 		case 'F':
 			args->format = arg;
@@ -73,9 +78,6 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state){
 			if (result != 1){
 				argp_failure(state, EINVAL, 0, "number of iterations should be a non-negative integer (received '%s')", arg);
 			}
-			break;
-		case 's':
-			args->svg = true;
 			break;
 		case ARGP_KEY_NO_ARGS:
 			argp_usage(state);
@@ -115,13 +117,13 @@ static const char doc[] =
 	"This consists of an even unsigned integer, followed by pairs of the form '<float>,<float>'. "
 	"The total number of floats must be the given integer."
 	"Alternatively, one or both of these arguments can be given as '-', in which case we read the text description from stdin."
-	"\v"
+	"\n\n"
 	"INITIAL looks for data in files INITIAL, INITIAL.init, and (if --include is present) INCLUDE/INITIAL and INCLUDE/INITIAL.init. "
 	"If INITIAL already ends in '.init' then the second and fourth possibilities are skipped."
 	"RULE does the same using the .rule extension instead of .init."
-	"\v"
-	"The RULE is a series of points p1, ..., pn and represents a deformation of the line segment (0, 0) to (1, 0). "
-	"Every line segment in INITIAL is replaced by a scaled, rotated and possibly reflected copy of the RULE."
+	"\n\n"
+	"The RULE is a list of points p1, ..., pn and represents a deformation of the line segment (0, 0) to (1, 0). "
+	"Every line segment in INITIAL is replaced by a scaled, rotated and possibly reflected copy of the RULE. "
 	"Reflection is controlled by the FLIP argument."
 	//TODO describe FLIP
 ;
