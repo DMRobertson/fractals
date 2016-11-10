@@ -25,7 +25,7 @@ def compute():
 	data = json.loads(string)
 	coords = data['coords']
 	darrays = "\n".join(as_darrays(coords))
-	output = subprocess.check_output([binary, '-n', str(data['niter']), '-', '-'], timeout=10, input=darrays, universal_newlines=True)
+	output = subprocess.check_output([binary, '-n', str(data['niter']), '-', '-'], timeout=5, input=darrays, universal_newlines=True)
 	return output.replace(" ", ",")[:-2]
 
 def as_darrays(coords):
@@ -64,4 +64,4 @@ def rotate(cos, sin, x, y):
 	return (x * cos - y * sin, x * sin + y * cos)
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=5000, debug=True)
+	app.run(host='0.0.0.0', port=5000)

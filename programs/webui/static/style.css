@@ -1,7 +1,34 @@
+html {
+	font-family: sans-serif;
+}
+
 #graph, #plot {
 	width: 100%;
 	height: 100%;
 	position: absolute;
 	top: 0px;
 	left: 0px;
+}
+
+#help {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 2;
+}
+
+body, button, .dg li {
+	font-size: 1.5em !important;
+}
+
+body {
+	background: #fff;
+	-webkit-transition: background-color 1000ms linear;
+	   -moz-transition: background-color 1000ms linear;
+	     -o-transition: background-color 1000ms linear;
+	    -ms-transition: background-color 1000ms linear;
+	        transition: background-color 1000ms linear;
+}
+body.loading {
+	background-color: #ddd;
 }

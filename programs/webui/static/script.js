@@ -97,6 +97,8 @@ cy.on('taphold', 'edge', function (event) {
 			}}
 		]);
 	});
+	computeDimension();
+	computeRequest();
 });
 
 function getData () {
@@ -118,19 +120,74 @@ var computeRequest = function (event) {
 	request.setRequestHeader('Content-type', 'text/plain');
 	request.onreadystatechange = function () {
 		if (request.readyState === 4 && request.status === 200) {
+			document.body.classList.remove('loading');
 			coords = JSON.parse('[' + request.responseText + ']');
 			plot(coords);
 		}
 	};
 	request.send(JSON.stringify({
 		'coords': coords,
-		'niter': options.iterations
+		'niter': options.live ? Math.min(options.iterations, 5) : options.iterations
 	}));
+	document.body.classList.add('loading');
 };
 
 cy.on('free', 'node', computeRequest);
 
-function resize_plot () {
+var computeDimension = function () {
+	var coords = getData();
+	var initialLength = Math.hypot(coords[0] - coords[coords.length - 2], coords[1] - coords[coords.length - 1]);
+	var ratios = [];
+	for (var i = 2; i < coords.length; i += 2) {
+		var hypot = Math.hypot(coords[i - 2] - coords[i], coords[i - 1] - coords[i + 1]);
+		ratios.push(hypot / initialLength);
+	}
+	var maxRatio = 0;
+	for (i = 0; i < ratios.length; i += 1) {
+		if (ratios[i] >= 1) {
+			document.getElementById('dimension').innerText = 'N/A';
+			return;
+		}
+		maxRatio = Math.max(maxRatio, ratios[i]);
+	}
+	var lower = 0;
+	var upper = -Math.log(ratios.length) / Math.log(maxRatio);
+	var dim = intervalBisection(function (t) {
+		var sum = -1;
+		for (var i = 0; i < ratios.length; i++) {
+			sum += Math.pow(ratios[i], t);
+		}
+		return sum;
+	}, lower, upper, 0.001);
+	if (dim !== undefined) {
+		document.getElementById('dimension').innerText = dim.toFixed(3).toString();
+	}
+};
+
+var intervalBisection = function (f, lower, upper, tolerance) {
+	var error = Infinity;
+	var values = [f(lower), f(upper)];
+	if ((f(lower) > 0) === (f(upper) > 0)) {
+		return undefined;
+	}
+	while (error > tolerance) {
+		var mid = (lower + upper) / 2;
+		var result = f(mid);
+		if ((result > 0) === (values[0] > 0)) {
+			values[0] = result;
+			lower = mid;
+		} else {
+			values[1] = result;
+			upper = mid;
+		}
+		error = (upper - lower) / 2;
+	}
+	return (upper + lower) / 2;
+};
+
+cy.on('position add', 'node', computeDimension);
+
+function resizePlot () {
 	var canvas = document.getElementById('plot');
 	canvas.width = canvas.offsetWidth;
 	canvas.height = canvas.offsetHeight;
@@ -148,9 +205,22 @@ function plot (coords) {
 	ctx.stroke();
 }
 
-window.addEventListener('resize', resize_plot);
-window.addEventListener('DOMContentLoaded', resize_plot);
-window.addEventListener('DOMContentLoaded', make_controls);
+window.addEventListener('resize', resizePlot);
+
+function toggleHelp () {
+	var details = document.getElementById('details');
+	if (details.style.display === 'none') {
+		details.style.display = 'block';
+	} else {
+		details.style.display = 'none';
+	}
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+	resizePlot();
+	makeControls();
+	document.getElementById('toggle_help').addEventListener('click', toggleHelp);
+});
 
 var Options = function () {
 	this.iterations = 5;
@@ -158,9 +228,9 @@ var Options = function () {
 };
 var options = new Options();
 
-function make_controls () {
+function makeControls () {
 	var gui = new dat.GUI();
-	gui.add(options, 'iterations', 2, 10).step(1).onFinishChange(function () {
+	gui.add(options, 'iterations', 2, 8).step(1).onFinishChange(function () {
 		cy.$('#start').trigger('free');
 	});
 	gui.add(options, 'live').onFinishChange(function () {
@@ -169,5 +239,5 @@ function make_controls () {
 		} else {
 			cy.off('position', 'node', computeRequest);
 		}
-	});
+	}).name('live');
 }
