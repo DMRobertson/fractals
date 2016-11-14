@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <string.h>
+#include <sys/time.h>
 
 // glibc specific
 #include <argp.h>
@@ -143,6 +144,11 @@ int main(int argc, char** argv){
 		fprintf(stderr, "%s: Unspecified initial setup or replacement rule\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
+	
+	// Seed random number generator with number of millseconds since last midnight
+	struct timeval start;
+	gettimeofday(&start, NULL);
+	srand(start.tv_usec);
 	
 	darray** iterations = malloc(sizeof(darray*) * (options.niter + 1));
 	iterations[0] = options.initial;

@@ -20,17 +20,20 @@ void transform(
 	bool hflip = false;
 	bool vflip  = false;
 	switch (flip){
-		case 'V':
+		case 'R': //random
+			vflip = rand() & 1;
+			break;
+		case 'V': //vertical
 			vflip = true;
 			break;
-		case 'H':
+		case 'H': //horizontal
 			hflip = true;
 			break;
-		case 'B':
+		case 'B': //both
 			hflip = true;
 			vflip  = true;
 			break;
-		default:
+		default: //e.g. n for normal
 			break;
 	}
 	
