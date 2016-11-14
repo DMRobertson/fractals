@@ -25,7 +25,7 @@ def compute():
 	data = json.loads(string)
 	coords = data['coords']
 	darrays = "\n".join(as_darrays(coords))
-	output = subprocess.check_output([binary, '-n', str(data['niter']), '-', '-'], timeout=5, input=darrays, universal_newlines=True)
+	output = subprocess.check_output([binary, '-n', str(data['niter']), '-', '-', data['flip']], timeout=5, input=darrays, universal_newlines=True)
 	return output.replace(" ", ",")[:-2]
 
 def as_darrays(coords):

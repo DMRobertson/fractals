@@ -127,7 +127,8 @@ var computeRequest = function (event) {
 	};
 	request.send(JSON.stringify({
 		'coords': coords,
-		'niter': options.live ? Math.min(options.iterations, 5) : options.iterations
+		'niter': options.live ? Math.min(options.iterations, 5) : options.iterations,
+		'flip': options.random ? 'R' : 'N'
 	}));
 	document.body.classList.add('loading');
 };
@@ -225,6 +226,7 @@ window.addEventListener('DOMContentLoaded', function () {
 var Options = function () {
 	this.iterations = 5;
 	this.live = false;
+	this.random = false;
 };
 var options = new Options();
 
@@ -240,4 +242,9 @@ function makeControls () {
 			cy.off('position', 'node', computeRequest);
 		}
 	}).name('live');
+	gui.add(options, 'random').onFinishChange(function () {
+		if (options.random) {
+			computeRequest();
+		}
+	});
 }
