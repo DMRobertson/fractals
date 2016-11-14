@@ -14,6 +14,7 @@ aTeX to use the Fira fonts}
 \usepackage{xfrac}
 \usepackage{xcolor}
 \usepackage{newtxsf}
+\usepackage{qrcode}
 
 \title{A spotter's guide to fractals}
 \subtitle{What, Why and How}
@@ -40,6 +41,16 @@ aTeX to use the Fira fonts}
 	{
 	\setbeamertemplate{background canvas}{
 		\includegraphics[height=\paperheight, keepaspectratio]{#1}
+	}
+	\begin{frame}[standout]
+		\frametitle{\mbox{#2}}
+	\end{frame}
+	}
+}
+\newcommand\picframew[2]{
+	{
+	\setbeamertemplate{background canvas}{
+		\includegraphics[width=\paperwidth, keepaspectratio]{#1}
 	}
 	\begin{frame}[standout]
 		\frametitle{\mbox{#2}}
@@ -167,13 +178,13 @@ aTeX to use the Fira fonts}
 \end{itemize}
 \end{frame}
 
-\section{What: Mathematical description}
+\section{WHAT: Mathematical description}
 
 \begin{frame}
 \frametitle{A definition}
 
 \begin{definition}[Mandelbrot]
-A \alert{fractal} is a subset $X \inside \reals^n$ whose Hausdorff dimension is strictly larger than its Lebesgue covering dimension.
+A \alert{fractal} is a subset $X \inside \reals^n$ whose Hausdorff dimension is strictly larger than its Topolgical dimension.
 \end{definition}
 
 This relies upon a definition of \alert{dimension}.
@@ -214,7 +225,7 @@ Say we're working with $X \subseteq \mathbb{R}^2$ and given some small $r > 0$.
 
 \begin{itemize}
 	\item How many $r \times r$ squares do you need to cover~$X$? \pause
-	\item Call the number $N(r)$ and $N(\sfrac 1 1), N(\sfrac 1 2), N(\sfrac 1 3), N(\sfrac 1 4), \dotsc$. 	\pause
+	\item Call the number $N(r)$; compute $N(\sfrac 1 1), N(\sfrac 1 2), N(\sfrac 1 3), N(\sfrac 1 4), \dotsc$ 	\pause
 	\item \alert{Example:} if $X = \text{unit square}$ then $N(1/n) = n^2$. 
 \end{itemize}
 \begin{center}
@@ -334,16 +345,153 @@ One recipe (of many): \alert{teragons}
 
 \begin{frame}
 \frametitle{Similarity dimension in general}
+Say our fractal $K$ looks like
 {\Large
 \begin{equation*}
 	K = K_1 \sqcup K_2 \sqcup \dots \sqcup K_n
 \end{equation*}
 }
+\vspace{-0.5em}
 \pause
 \begin{itemize}[<+->]
 	\item Each copy~$K_i$ is a scaled copy of~$K$ {\small\hfill(say at scale $r_i < 1$)}
 	\item Solve $r_1^d + \dots + r_n^d = 1$       {\small\hfill(e.g.\ numerically)}
 	\item $\dimS$ is the unique solution~$d$
 \end{itemize}
+\pause[\thebeamerpauses]
+\begin{center}
+\large
+Webbrowser demo @ \href{http://caldew:5000}{\alert{\ttfamily caldew:5000}} \hfil
+\qrcode{http://caldew:5000}
+\end{center}
 \end{frame}
+
+\begin{frame}[t]
+\frametitle{Generalisations: graph replacement}
+\begin{itemize}
+	\item \alert{Currently:} line segment $\mapsto$ smaller segments \pause
+	\item \alert{Why not:} edge in a graph $\mapsto$ subgraph \pause
+\end{itemize}
+Example: Cantor set $\mathcal C$
+\begin{center}
+	\vspace{-0.5em}
+	\includegraphics[width=\linewidth]{tikz/cantor_rule} \pause \\
+	\includegraphics[width=\linewidth]{../media/Cantor_set_construction}
+	\pause
+	
+	\bigskip
+	$\dimS(\mathcal C) = \log 2 / \log 3 \approx 0.6309 \qquad \dimT(\mathcal C) = 0$
+\end{center}
+\end{frame}
+
+{
+\setbeamertemplate{background canvas}{}
+\begin{frame}[t]
+\frametitle{Generalisations: graph replacement}
+\begin{itemize}
+	\item \alert{Currently:} line segment $\mapsto$ smaller segments
+	\item \alert{Why not:} edge in a graph $\mapsto$ subgraph
+\end{itemize}
+Example: Basilica set $\mathcal B$ \hfill{\small(an example of a ``Julia set'')}
+\begin{center}
+	\vspace{-0.5em}
+	\alt<1-2>{
+		\includegraphics[height=3cm]{../media/basilica_edge}\qquad
+		\includegraphics[height=3cm]{../media/basilica_rule}\qquad
+		\includegraphics[height=3cm, trim={0 5mm 0 5mm}, clip]{../media/basilica_base}\\
+		\onslide<2>{
+			\hfill
+			\includegraphics[width=0.3\linewidth]{../media/basilica_stage_1}%
+			\hfill			
+			\includegraphics[width=0.3\linewidth]{../media/basilica_stage_2}%
+			\hfill			
+			\includegraphics[width=0.3\linewidth]{../media/basilica_stage_3}%
+		}
+	}{
+		\includegraphics[width=0.86\linewidth]{../media/basilica_limit}
+	}
+\end{center}
+%\hfill{
+%\footnotesize Pictures from Belk \& Forrest,
+%\href{https://arxiv.org/abs/1510.03133}{\textit{Rearrangement Groups of Fractals} arXiv:1510.03133}
+%}
+\pause
+\pause
+\end{frame}
+}
+
+\begin{frame}[t]
+\frametitle{Generalisations: random flipping}
+\begin{itemize}
+	\item \alert{Currently:} line segment $\mapsto$ smaller segments \pause
+	\item \alert{Why not:} randomly flip some of these line segments? \pause
+\end{itemize}
+Example: random Koch curve
+\begin{center}
+	\begin{tikzpicture}[scale=0.8, thick]
+		\draw (0, 0) -- (3, 0);
+		\path (4.5,0) node {becomes};
+		\tikzset{xshift=6cm}
+		\draw[dotted] (0, 0) -- ++(0:1) -- ++(+60:1) -- ++(-60:1) -- ++(1,0);
+		\path (3.5,0) node {or};
+		\tikzset{xshift=4cm}		
+		\draw[dotted] (0, 0) -- ++(0:1) -- ++(-60:1) -- ++(+60:1) -- ++(1,0);
+	\end{tikzpicture}
+\end{center}
+\pause
+Randomness leads to an entire class of `stochastic fractals':
+\begin{itemize}
+	\item Brownian motion
+	\item Self-avoiding walks/paths
+\end{itemize}
+\end{frame}
+
+\picframew{../media/L-system_example}{Alternatives: L-systems}
+\picframew{../media/Lorenz_attractor}{Alternatives: Strange attractors}
+\picframew{../media/LuChenAttractor3D}{Alternatives: Strange attractors}
+\picframew{../media/mandelbrot_set}{Alternatives: Escape time fractals \qquad\qquad{\small\href{https://www.youtube.com/watch?v=PD2XgQOyCCk}{Animation @ YouTube}}}
+\picframew{../media/Julia_set_example}{Alternatives: Escape time fractals}
+
+\begin{frame}
+\frametitle{Other ways to make fractals}
+\begin{itemize}
+	\item[] \alert{Iterated function system:} copy an object to shrunk versions of itself
+	\item[] \alert{Stochastic fractals}: detail defined by random movement or deformation
+	\item[] \alert{L-systems}: based on rewriting strings, good for modelling plants
+	\item[] \alert{Strange attractors}: points in a chaotic systems often get stuck in a fractal set
+	\item[] \alert{Escape time fractals}: reapply a map and wait until it sends points to a limit or to $\infty$
+\end{itemize}
+\end{frame}
+
+\section{WHY: is it just pretty pictures?}
+\begin{frame}
+\frametitle{Natural-looking computer simulations}
+\begin{itemize}[<+->]
+	\item Real world is more fractal than not
+	\item \alert{Procedural generation}: Systematically generate landscapes, trees, grass, shrubs, coastlines, clouds, silhouettes, textures\dots
+	\item Often used in computer games, TV and film \href{https://youtu.be/52XlyMbxxh8?t=106}{(\alert{Star Trek II})}
+	\item A base for artists to detail, or for further processing
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Source of `weird' sets}
+\begin{itemize}[<+->]
+	\item Pathological examples where intuition fails
+	\item \alert{Weierstrass function:} $f(x) = \sum_{n=0}^\infty a^n \cos(b^n\pi x)$
+	\item \alert{Space-filling curves:} continuous map $[0, 1] \twoheadrightarrow [0,1]^2$	
+\end{itemize}
+
+\onslide<2->{\includegraphics[width=0.5\linewidth]{../media/WeierstrassFunction}}%
+\onslide<3->{\includegraphics[width=0.5\linewidth]{../media/Hilbert_curve}}
+\end{frame}
+
+\begin{frame}
+ 	Attribute images here
+\end{frame}
+
+\begin{frame}[standout]
+	\Huge Muchas gracias!
+\end{frame}
+
 \end{document}

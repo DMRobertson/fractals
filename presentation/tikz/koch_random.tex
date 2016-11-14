@@ -1,0 +1,12 @@
+\documentclass[tikz, preview, border={0mm 5mm}]{standalone}
+\begin{document}
+	\begin{tikzpicture}[thick]
+		\draw (0, 0) -- (3, 0);
+		\path (4,0) node {becomes};
+		\tikzset{xshift=5cm}
+		\draw[dotted] (0, 0) -- ++(0:1) -- ++(+60:1) -- ++(-60:1) -- ++(1,0);
+		\path (3.5,0) node {or};
+		\tikzset{xshift=4cm}		
+		\draw[dotted] (0, 0) -- ++(0:1) -- ++(-60:1) -- ++(+60:1) -- ++(1,0);
+	\end{tikzpicture}
+\end{document}

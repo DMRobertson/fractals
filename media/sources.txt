@@ -94,3 +94,55 @@ box_dimension.png
 CC BY-SA 3.0
 https://commons.wikimedia.org/wiki/File:Great_Britain_Box.svg
 Accessed 25th October 2016
+
+Cantor_set_construction.png
+Public domain
+https://commons.wikimedia.org/wiki/File:Cantor_set_in_seven_iterations.svg
+Accessed 14th November 2016
+
+basilica_base.pdf
+basilica_edge.pdf
+basilica_limit.pdf
+basilica_rule.pdf
+basilica_stage_1.pdf
+basilica_stage_2.pdf
+basilica_stage_3.pdf
+https://arxiv.org/licenses/nonexclusive-distrib/1.0
+From the tar.gz source of https://arxiv.org/abs/1510.03133
+Accessed 14th November 2016
+
+L-system_example.png
+CC BY-SA 3.0
+https://commons.wikimedia.org/wiki/File:Fractal-plant.svg
+Accessed 14th November 2016
+
+Lorenz_attractor.png
+CC BY-SA 3.0
+https://en.wikipedia.org/wiki/File:Lorenz_attractor_yb.svg
+Accessed 14th November 2016
+
+LuChenAttractor
+CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:LuChenAttractor3D.svg
+Accessed 14th November 2016
+
+Julia_set_example.png
+Public domain
+https://en.wikipedia.org/wiki/Julia_set#/media/File:Reversed_Julia_set_C_%3D_(_0.4_0.3_).gif
+Accessed 14th November 2016
+
+WeierstrassFunction.png
+Public domain
+https://commons.wikimedia.org/wiki/File:WeierstrassFunction.svg
+Accessed 14th November 2016
+
+Peano_curve.png
+CC BY-SA 3.0
+https://en.wikipedia.org/wiki/File:Peanocurve.svg
+Accessed 14th November 2016
+
+Hilbert_curve.png
+CC BY-SA 3.0
+https://commons.wikimedia.org/wiki/File:Hilbert_curve.svg
+Accessed 14th November 2016
+
