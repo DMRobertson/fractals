@@ -24,6 +24,7 @@ aTeX to use the Fira fonts}
 \newcommand\dimT{\operatorname{dim}_{\operatorname{Top}}}
 \newcommand\dimB{\operatorname{dim}_{\operatorname{Box}}}
 \newcommand\dimS{\operatorname{dim}_{\operatorname{Sim}}}
+\newcommand\youtube{\raisebox{-.06\height}{\includegraphics[height=1.5ex]{../media/YouTube}}}
 
 %TikZ gibberish
 \def\kochsegment#1#2{--++(#1:#2) -- ++(#1+60:#2) -- ++(#1-60:#2) -- ++(#1:#2)}
@@ -449,7 +450,7 @@ Randomness leads to an entire class of `stochastic fractals':
 \picframew{../media/L-system_example}{Alternatives: L-systems}
 \picframew{../media/Lorenz_attractor}{Alternatives: Strange attractors}
 \picframew{../media/LuChenAttractor3D}{Alternatives: Strange attractors}
-\picframew{../media/mandelbrot_set}{Alternatives: Escape time fractals \qquad\qquad{\small\href{https://www.youtube.com/watch?v=PD2XgQOyCCk}{Animation @ YouTube}}}
+\picframew{../media/mandelbrot_set}{Alternatives: Escape time fractals \qquad\qquad\qquad{\normalsize\href{https://www.youtube.com/watch?v=PD2XgQOyCCk}{\youtube~Animation}}}
 \picframew{../media/Julia_set_example}{Alternatives: Escape time fractals}
 
 \begin{frame}
@@ -465,11 +466,21 @@ Randomness leads to an entire class of `stochastic fractals':
 
 \section{WHY: is it just pretty pictures?}
 \begin{frame}
-\frametitle{Natural-looking computer simulations}
+\frametitle{More convincing computer simulations}
 \begin{itemize}[<+->]
 	\item Real world is more fractal than not
 	\item \alert{Procedural generation}: Systematically generate landscapes, trees, grass, shrubs, coastlines, clouds, silhouettes, textures\dots
-	\item Often used in computer games, TV and film \href{https://youtu.be/52XlyMbxxh8?t=106}{(\alert{Star Trek II})}
+\end{itemize}
+\pause[\thebeamerpauses]
+\hfill
+	\includegraphics[height=0.25\paperheight]{../media/FractalLandscape}%
+	\includegraphics[height=0.25\paperheight]{../media/Fractal_terrain_texture}%
+	\includegraphics[height=0.25\paperheight]{../media/BlueRidgePastures}%
+\hfill
+\begin{itemize}[<+->]
+	\item ``Perlin noise``, ``diamond-square algorithm''
+	\item Used in computer games; visual effects for TV and film
+	 \href{https://youtu.be/52XlyMbxxh8?t=106}{(\youtube~\alert{Star Trek II})}
 	\item A base for artists to detail, or for further processing
 \end{itemize}
 \end{frame}
@@ -484,6 +495,14 @@ Randomness leads to an entire class of `stochastic fractals':
 
 \onslide<2->{\includegraphics[width=0.5\linewidth]{../media/WeierstrassFunction}}%
 \onslide<3->{\includegraphics[width=0.5\linewidth]{../media/Hilbert_curve}}
+\end{frame}
+
+\begin{frame}
+ 	One more slide explaining why fractals are interesting and worth studying.
+\end{frame}
+
+\begin{frame}[standout]
+ 	Summary
 \end{frame}
 
 \begin{frame}
