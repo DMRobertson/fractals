@@ -127,8 +127,8 @@ https://commons.wikimedia.org/wiki/File:LuChenAttractor3D.svg
 Accessed 14th November 2016
 
 Julia_set_example.png
-Public domain
-https://en.wikipedia.org/wiki/Julia_set#/media/File:Reversed_Julia_set_C_%3D_(_0.4_0.3_).gif
+CC BY-SA 3.0
+WeierstrassFunction.svgFile:Julia_dem_c%3D-0.1%2B0.651.png
 Accessed 14th November 2016
 
 WeierstrassFunction.png
@@ -165,3 +165,28 @@ BlueRidgePastures.jpg
 CC BY-SA 2.5
 https://en.wikipedia.org/wiki/File:BlueRidgePastures.jpg
 Acessed 15th November 2016
+
+Cerebral_lobes.png
+CC BY-SA 3.0
+https://commons.wikimedia.org/wiki/File:Cerebral_lobes.png
+Accessed 15th November 2016
+
+Casts_of_lungs.jpg
+CC BY-SA 2.0
+https://commons.wikimedia.org/wiki/File:Casts_of_lungs,_Marco_resin,_1951_(23966574469).jpg
+Accessed 15th November 2016
+
+London_skyline.jpg
+CC-BY-SA 2.0
+https://commons.wikimedia.org/wiki/File:Evening_London_(15884928867).jpg
+Accessed 15th November 2016
+
+fractal_barrier.jpg
+
+http://www.ipam.ucla.edu/wp-content/uploads/2014/06/fractal-barrier-2.jpg and http://www.ipam.ucla.edu/research-articles/fractal-acoustic-barrier/
+Accessed 15th November 2016 
+
+fractal_antenna.jpg
+Public Domain
+https://commons.wikimedia.org/wiki/File:Antenna_flat_panel.png
+Accessed 15th November 2016 

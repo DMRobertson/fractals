@@ -15,6 +15,7 @@ aTeX to use the Fira fonts}
 \usepackage{xcolor}
 \usepackage{newtxsf}
 \usepackage{qrcode}
+\usepackage{multicol}
 
 \title{A spotter's guide to fractals}
 \subtitle{What, Why and How}
@@ -139,7 +140,7 @@ aTeX to use the Fira fonts}
 	\toprule
 	             Micro        &Meso             &Macro              \\
 	\midrule
-	\uncover<2->{Quantum      &Normal           &General Relativity}\\
+	\uncover<2->{Quantum      &Classical        &General Relativity}\\
 	\uncover<3->{Observation  &Sample           &Population        }\\
 	\uncover<4->{Time series  &Moving average   &Trend             }\\
 	\bottomrule
@@ -498,15 +499,99 @@ Randomness leads to an entire class of `stochastic fractals':
 \end{frame}
 
 \begin{frame}
- 	One more slide explaining why fractals are interesting and worth studying.
+	\frametitle{A form of compression}
+	\begin{itemize}[<+->]
+		\item Need to walk through a grid with small coordinate changes?
+		\item Need to say that parts of an image look self-similar?
+		\item Need a large amount of wire in a small space?
+		\item Need a large surface area in a small space?
+		\item Need a systematic way to make a rough surface?
+	\end{itemize}
+	{
+	\hfill
+	\includegraphics<1>[height=0.5\paperheight, trim={344 4 344 344}, clip]{../media/Hilbert_curve}
+	\includegraphics<2>[height=0.5\paperheight]{../media/London_skyline}
+	\includegraphics<3>[height=0.5\paperheight]{../media/fractal_antenna}
+	\includegraphics<4>[height=0.5\paperheight]{../media/Cerebral_lobes}
+	\includegraphics<4>[height=0.5\paperheight]{../media/Casts_of_lungs}
+	\includegraphics<5>[height=0.5\paperheight]{../media/fractal_barrier}
+	\hfill
+	}
 \end{frame}
 
 \begin{frame}[standout]
- 	Summary
+\frametitle{\mbox{\Large In short, Fractals:}}
+
+\begin{itemize}[<+->]
+	\item Shapes with built-in self-similarity
+	\item Models often built iteratively
+	\item Also arise from dynamical systems
+	\item Aesthetically appear `more natural'
+	\item $\implies$ Pretty pictures!
+\end{itemize}
 \end{frame}
 
 \begin{frame}
- 	Attribute images here
+\frametitle{Flickr photos:\hfill{\small https://www.flickr.com/photos/  + \dots}}
+\begin{multicols}{2}
+\scriptsize
+\foreach \user/\idnum/\path in {
+	34121831@N00/6027569462/clouds,
+	triplea4/15228944302/mountains,
+	provoost/2390399208/coastline,
+	sonofgroucho/5118887516/bark,
+	qualsiasi/261599589/lightning,
+	macsantos/9242974148/velcro,
+	28594931@N03/4831814540/carrot_leaf,
+	107963674@N07/14628897742/coffee_filter,
+	bluegreenchair/5615543558/sem_feather,
+	bluegreenchair/5614961945/sem_bone,
+	bluegreenchair/5614962423/sem_egg,
+	distillated/3151042571/snooker%
+}{
+	\href{https://www.flickr.com/photos/\user/\idnum}{\raisebox{-.4\height}{\includegraphics[width=12mm, height=8mm]{../media/\path}} \user/\idnum} \\
+}
+\end{multicols}
+\end{frame}
+\begin{frame}
+\frametitle{Wikimedia images:\hfill{\small https://commons.wikimedia.org/wiki/File:  + \dots}}
+
+\begin{multicols}{2}
+\tiny
+\foreach \dest/\path in {
+	Bose\_Einstein\_condensate.png/bec,
+	NASA-HS201427a-HubbleUltraDeepField2014-20140603.jpg/universe,
+	Great\_Britain\_Box.svg/box_dimension,
+	Cantor\_set\_in\_seven\_iterations.svg/Cantor_set_construction,
+	Fractal-plant.svg/L-system_example,
+	Lorenz\_attractor\_yb.svg/Lorenz_attractor,
+	LuChenAttractor3D.svg/LuChenAttractor3D,
+	Julia\_dem\_c=-0.1+0.651.png/Julia_set_example,
+	WeierstrassFunction.svg/WeierstrassFunction,
+	Peanocurve.svg/Peano_curve,
+	Hilbert\_curve.svg/Hilbert_curve,
+	FractalLandscape.jpg/FractalLandscape,
+	Fractal\_terrain\_texture.jpg/Fractal_terrain_texture,
+	BlueRidgePastures.jpg/BlueRidgePastures,
+	Cerebral\_lobes.png/Cerebral_lobes,
+	Casts\_of\_lungs\%2C\_Marco\_resin\%2C\_1951\_(23966574469).jpg/Casts_of_lungs,
+	Evening\_London\_(15884928867).jpg/London_skyline,
+	Antenna\_flat\_panel.png/fractal_antenna%
+}{
+	\href{https://commons.wikimedia.org/wiki/File:\dest}{\raisebox{-.4\height}{\includegraphics[width=12mm, height=8mm]{../media/\path}} \dest} \\
+}
+\end{multicols}
+\end{frame}
+
+\begin{frame}
+\frametitle{Others}
+\begin{itemize}
+	\item[] Maps from \href{https://www.openstreetmap.org}{Open Street Map}
+	\item[] The last three aren't Creative Commons or Public domain:
+	\item[] \youtube~YouTube icon from \href{https://www.youtube.com/yt/brand/en-GB/using-logo.html}{YouTube's branding guidelines}
+	\item[] Basilica images from Belk, Forrest: \emph{Rearrangement Groups of Fractals} @ \href{https://arxiv.org/abs/1510.03133}{arXiv:1010.03133}
+	\item[] Fractal sound barrier from {\\\hfill\tiny \url{http://www.ipam.ucla.edu/research-articles/fractal-acoustic-barrier}}
+\end{itemize}
 \end{frame}
 
 \begin{frame}[standout]
